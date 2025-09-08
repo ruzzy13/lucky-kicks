@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from .models import News
+from .models import Product
 
 class MainTest(TestCase):
     def test_main_url_is_exist(self):
@@ -14,50 +14,49 @@ class MainTest(TestCase):
         response = Client().get('/burhan_always_exists/')
         self.assertEqual(response.status_code, 404)
 
-    def test_news_creation(self):
-        news = News.objects.create(
-          title="BURHAN FC MENANG",
-          content="BURHAN FC 1-0 PANDA BC",
-          category="match",
-          news_views=1001,
-          is_featured=True
+    def test_product_creation(self):
+        product = Product.objects.create(
+            name = "air force",
+            price = "1000000",
+            description = "sepatu skena",
+            category = "shoes",
+            is_featured = True,
         )
-        self.assertTrue(news.is_news_hot)
-        self.assertEqual(news.category, "match")
-        self.assertTrue(news.is_featured)
+        self.assertTrue(product.is_featured)
         
-    def test_news_default_values(self):
-        news = News.objects.create(
-          title="Test News",
-          content="Test content"
+    def test_product_default_values(self):
+        product = Product.objects.create(
+            name = "running",
+            price = "500000",
+            description = "sepatu lari",
+            category = "shoes",
+            is_featured = True,
         )
-        self.assertEqual(news.category, "update")
-        self.assertEqual(news.news_views, 0)
-        self.assertFalse(news.is_featured)
-        self.assertFalse(news.is_news_hot)
+        #gantiii
+        self.assertEqual(product.category, "shoes")
+        self.assertEqual(product.price, 500000)
         
     def test_increment_views(self):
-        news = News.objects.create(
-          title="Test News",
-          content="Test content"
+        product = Product.objects.create(
+          # ganti
+          name ="jordan",
+          
         )
-        initial_views = news.news_views
-        news.increment_views()
-        self.assertEqual(news.news_views, initial_views + 1)
+        initial_views = product.views
+        product.increment_views()
+        self.assertEqual(product.views, initial_views + 1)
         
-    def test_is_news_hot_threshold(self):
-        # Test news with exactly 20 views (should not be hot)
-        news_20 = News.objects.create(
-          title="News with 20 views",
-          content="Test content",
-          news_views=20
+    def test_is_product_hot_threshold(self):
+        # Test product with exactly 20 views (should not be hot)
+        views_25 = Product.objects.create(
+          name= "golf",
+          views=25
         )
-        self.assertFalse(news_20.is_news_hot)
+        self.assertTrue(views_25.is_product_hot)
         
-        # Test news with 21 views (should be hot)
-        news_21 = News.objects.create(
-          title="News with 21 views", 
-          content="Test content",
-          news_views=21
+        # Test product with 21 views (should be hot)
+        news_15 = Product.objects.create(
+          title="running", 
+          views=15
         )
-        self.assertTrue(news_21.is_news_hot)
+        self.assertFalse(news_15.is_news_hot)

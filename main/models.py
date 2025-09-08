@@ -2,27 +2,32 @@ import uuid
 from django.db import models
 
 class Product(models.Model):
+    
     CATEGORY_CHOICES = [
-        ('transfer', 'Transfer'),
-        ('update', 'Update'),
-        ('exclusive', 'Exclusive'),
-        ('match', 'Match'),
-        ('rumor', 'Rumor'),
-        ('analysis', 'Analysis'),
+        ('shoes', 'Shoes'),
+        ('jersey', 'Jersey'),
+        ('ball', 'Ball'),
     ]
     
-    name = models.CharField(max_length=255,default="air force");
-    price = models.IntegerField();
-    description = models.TextField();
-    thumbnail = models.URLField();
-    category = models.CharField(max_length=255,default="shoes");
-    is_featured = models.BooleanField();
+    name = models.CharField(max_length=255,default="air force")
+    price = models.IntegerField()
+    description = models.TextField()
+    thumbnail = models.URLField()
+    category = models.CharField(max_length=255,default="shoes")
+    is_featured = models.BooleanField()
 
     # atribut sendiri
-    brand = models.CharField(max_length=255,default="nike");
-    stock = models.IntegerField();
+    brand = models.CharField(max_length=255,default="nike")
+    stock = models.IntegerField()
+    views = models.IntegerField(default=0)
     
     def __str__(self):
-        return self.title
-    
-    # @property
+        return self.name
+
+    @property
+    def is_product_hot(self):
+        return self.views > 20
+        
+    def increment_views(self):
+        self.views += 1
+        self.save()
