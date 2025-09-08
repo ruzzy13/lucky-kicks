@@ -10,15 +10,15 @@ class Product(models.Model):
     ]
     
     name = models.CharField(max_length=255,default="air force")
-    price = models.IntegerField()
+    price = models.IntegerField(default=0)
     description = models.TextField()
     thumbnail = models.URLField()
     category = models.CharField(max_length=255,default="shoes")
-    is_featured = models.BooleanField()
+    is_featured = models.BooleanField(default=False)
 
     # atribut sendiri
     brand = models.CharField(max_length=255,default="nike")
-    stock = models.IntegerField()
+    stock = models.IntegerField(default=0)
     views = models.IntegerField(default=0)
     
     def __str__(self):

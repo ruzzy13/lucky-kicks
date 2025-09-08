@@ -17,46 +17,43 @@ class MainTest(TestCase):
     def test_product_creation(self):
         product = Product.objects.create(
             name = "air force",
-            price = "1000000",
-            description = "sepatu skena",
+            price = 1000000,
             category = "shoes",
             is_featured = True,
         )
+        self.assertEqual(product.name, "air force")
+        self.assertEqual(product.price, 1000000)
         self.assertTrue(product.is_featured)
         
     def test_product_default_values(self):
         product = Product.objects.create(
             name = "running",
-            price = "500000",
+            price = 500000,
             description = "sepatu lari",
             category = "shoes",
-            is_featured = True,
         )
-        #gantiii
         self.assertEqual(product.category, "shoes")
         self.assertEqual(product.price, 500000)
         
     def test_increment_views(self):
         product = Product.objects.create(
-          # ganti
-          name ="jordan",
-          
+            name = "air force",
+            views = 0
         )
+          
         initial_views = product.views
         product.increment_views()
         self.assertEqual(product.views, initial_views + 1)
         
     def test_is_product_hot_threshold(self):
-        # Test product with exactly 20 views (should not be hot)
         views_25 = Product.objects.create(
           name= "golf",
           views=25
         )
         self.assertTrue(views_25.is_product_hot)
         
-        # Test product with 21 views (should be hot)
-        news_15 = Product.objects.create(
-          title="running", 
+        views_15 = Product.objects.create(
+          name="running", 
           views=15
         )
-        self.assertFalse(news_15.is_news_hot)
+        self.assertFalse(views_15.is_product_hot)
