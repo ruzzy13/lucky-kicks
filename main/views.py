@@ -6,7 +6,7 @@ def show_main(request):
         'npm' : '2406495451',
         'name': 'Zhafira Uzma',
         'class': 'PBP C',
-        'nama_aplikasi' : "lucky_kicks"
+        'nama_aplikasi' : " Lucky Kicks"
     }
 
     return render(request, "main.html", context)
