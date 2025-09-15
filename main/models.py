@@ -9,6 +9,7 @@ class Product(models.Model):
         ('ball', 'Ball'),
     ]
     
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255,default="air force")
     price = models.IntegerField(default=0)
     description = models.TextField()
@@ -17,7 +18,6 @@ class Product(models.Model):
     is_featured = models.BooleanField(default=False)
 
     # atribut sendiri
-    brand = models.CharField(max_length=255,default="nike")
     stock = models.IntegerField(default=0)
     views = models.IntegerField(default=0)
     
