@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from main.forms import ProductForm, BolaForm
-from main.models import Product, Bola
+from main.forms import ProductForm
+from main.models import Product
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -20,14 +20,12 @@ def show_main(request):
     else:
         product_list = Product.objects.filter(user=request.user)
     
-    bola_list = Bola.objects.all()
 
     context = {
         'npm': '2406495451',
         'name': request.user.username,
         'class': 'PBP C',
         'product_list': product_list,
-        'bola_list': bola_list,
         'last_login': request.COOKIES.get('last_login', 'Never')
     }
     return render(request, "main.html",context)
@@ -114,22 +112,3 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
-
-def new_bola(request):
-    if request.method == "POST":
-        form = BolaForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            brand = form.cleaned_data['brand']
-            stock = form.cleaned_data['stock']
-
-            Bola.objects.create(
-                name=name,
-                brand=brand,
-                stock=stock
-            )
-            return redirect("main:show_main")
-    else:
-        form = BolaForm()
-    context = {"form": form}
-    return render(request, "new_bola.html", context)

@@ -32,11 +32,3 @@ class Product(models.Model):
     def increment_views(self):
         self.views += 1
         self.save()
-
-class Bola(models.Model):
-    name = models.CharField(max_length=255)
-    brand = models.CharField(max_length=255)
-    stock = models.IntegerField()
-
-    def __str__(self):
-        return self.name
