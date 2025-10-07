@@ -2,25 +2,29 @@ Zhafira Uzma || 2406495451 || PBP C
 
 link pws : https://zhafira-uzma41-luckykicks.pbp.cs.ui.ac.id/  
 
-# **Tugas Individu 5**  
+# **Tugas Individu 6**  
 
-## **1. Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!**  
-= Urutan prioritas pengambilan CSS selector ditentukan oleh 3 faktor utama, diurutkan dari yang paling penting yaitu importance, specificity, dan source order.  
-- Importance atau disebutjuga sebagai "aturan". Jika !important ditambahkan ke sebuah properti css aturan tersebut akan mengalahkan semua aturan lainnya  
-- Specificity : Jika tidak ada !important, browser akan menghitung specificity score untuk setiap selector. Selector dengan skor tertinggi akan menang. Hierarki specificity dari yang tertinggi adalah inline styles, id selectors, Class, Attribute, dan Pseudo-class Selectors, dan Element dan Pseudo-element Selectors.  
-- Source Order : Jika dua selector memiliki skor kekhususan yang sama persis, maka aturan yang didefinisikan paling akhir di dalam file CSS (atau yang diimpor terakhir) yang akan diterapkan.  
+## **1. Apa perbedaan antara synchronous request dan asynchronous request?**  
+### a. Synchronous Request  
+Dalam synchronous request, ketika sebuah program mengirim permintaan (misalnya, mengambil data dari server), program tersebut akan berhenti dan menunggu hingga respons diterima sepenuhnya sebelum melanjutkan ke baris kode berikutnya. Cara kerja dari synchronous request adalah klien mengirim permintaan ke server. Lalu, klien berhenti dan menunggu respons. Seluruh antarmuka pengguna (UI) bisa menjadi tidak responsif atau "freeze". Kemudian, server memproses permintaan dan mengirimkan respons. Terakhir, klien menerima respons dan melanjutkan eksekusi kode selanjutnya.  
+### b. Asynchronous Request  
+Dalam asynchronous request, ketika program mengirim permintaan, ia tidak perlu menunggu respons. Program bisa langsung melanjutkan eksekusi baris kode berikutnya. Respons akan diproses nanti jika sudah tiba, biasanya menggunakan mekanisme seperti callback, Promise, atau async/await. Cara kerja dari asynchronous request adalah klien mengirim permintaan ke server. Lalu, klien tidak berhenti dan langsung melanjutkan eksekusi tugas lain. Ketika respons tiba, sebuah fungsi yang telah ditentukan (callback) akan dijalankan untuk memproses data dari respons tersebut.
 
-## **2. Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design, serta jelaskan mengapa!**  
-=   Responsive design merupakan konsep yang sangat penting dalam pengembangan aplikasi web karena dapat mengingkatkan kepuasan pengguna dan memudahkan pengembangan aplikasi karena lebih efisien dalam pengembangannya (tidak perlu membuat dua aplikasi berbeda untuk tipe perangkat yang berbeda). Contoh aplikasi web yang sudah menerapkan responsive design adalah e-commerce seperti Tokopedia dan Shopee. Ketika membuka aplikasi tersebut pada web komputer, tampilan grid product lebih banyak dari yang ditampilkan pada handphone. Ada pula web yang beum menerapkan responsive design yaitu website arsip ppdb karena ketika website dibuka pada laptop, tampilannya cukup rapih. Berbeda ketika dibuka melalui handphone, banyak elemen yang berantakan dan ukuran sudah ditentukan sehingga ukuran web tidak sesuai dengan ukuran layar handphone.  
+## **2. Bagaimana AJAX bekerja di Django (alur request–response)?**  
+=  AJAX pada Django memungkinkan platfoem web berkomunikasi dengan server Django tanpa perlu me-reload web. Berikut ini adalah jalan kerja AJAX pada Django:  
+1. User memberikan aksi pada web yang memicu fungsi JavaScript,  
+2. Program mengeksekusi JavaScript & membuat request HTTP dengan Fetch API.  
+3. Program mengirimkan asynchronous request ke sever Django.
+4. Program akan menunggu dan memproses request tersebut. Setelah mendapat respon, program akan memparsing data yang diterima dan menggunakan data tersebut untuk memanipulasi DOM.  
+5. Server Django menerima request dari browser. Url sedolver Django akan mencocokan url dari request dengan yang ada pada file.  
+6. Program mengeksekusi logika pada views.py.
+7. Setelah mengeksekusi logika selesai, program menyiapkan dan mengirim response balik kepada user.  
 
-## **3. Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!**  
-= - Margin :  ruang transparan di bagian luar elemen, setelah border. Fungsinya adalah untuk menciptakan jarak atau spasi antara elemen tersebut dengan elemen lain di sekitarnya.  
-- Border : garis yang berada di antara padding dan margin. Border dapat diatur ketebalan, gaya, dan warna.  
-- Padding : ruang transparan di bagian dalam elemen yang memisahkan konten (teks dan gambar) dari border. Menambah padding akan membuat ukuran elemen terlihat lebih besar karena ruang di dalamnya bertambah.   
-cara mengimplementasikan ketiga hal tersebut adalah dengan membuat class selector. Lalu, didalamnya baru menambahkan ketiga elemen tersebut seperti margin: 30px; border: 5px blue; dan padding: 20px;. Jangan lupa untuk menutup class selector tersebut.
+## **3. Apa keuntungan menggunakan AJAX dibandingkan render biasa di Django?**  
+= Terdapat beberapa keuntungan rendering dengan AJAX dibanding rendering biasa pada Django. Rendering menggunakan AJAX membuat interaksi user dengan platform lebih baik karena bekerja secara instan dan responsif. Ajax juga mengurangi jumlah data yang ditransfer antara user dan server secara signifikan.  Ajax juga membantu Django untuk mengurangi beban servernya dengan membuat Django tidak perlu me-render seluruh template untuk setiap interaksi. Terakhir, AJAX juga bisa menjaga state platform jika tidak di-reload. 
 
-## **4. Jelaskan konsep flex box dan grid layout beserta kegunaannya!**  
-= Konsep flex box adalah model layout yang memungkinkan item di dalam sebuah kontainer diatur secara fleksibel di sepanjang satu sumbu, baik secara horizontal maupun vertikal. Kegunaan dari konsep flex box ini adalah membuat navigation bar, centering, card component, dan distribusi ruang. Konsep grid layout adalah  sistem layout berbasis grid dua dimensi yang memungkinkan Anda mengatur konten dalam baris dan kolom secara bersamaan. Ini memberikan kontrol yang jauh lebih besar untuk tata letak halaman web secara keseluruhan. kegunaan dari konsep grid layout adalah membuat layout Home Page, galeri gambar, Dashboard, dan layout asimetris
+## **4. Bagaimana cara memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register di Django?**  
+= Untuk memastikan keamanan saat menggunakan AJAX untuk fitur login dan register pada Django, kita perlu menggabungkan fitur keamanan bawaan dari Django dan keamanan dari client dan server. Caranya dengan menggunakan HTTPS sehingga semua data yang dikirim, termasuk data AJAX akan dienkripsi. Kita juga mengimplementasikan CSRF Protection untuk menghindari serangan siber. Server juga perlu melakukan validasi input dari user. Selain itu, perlu juga menggunakan hashing untuk password dan menerapkan rate limiting. 
 
-## **5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).**  
-=  Pertama-tama, saya menambahkan tailwind pada base.html untuk styling pada website. Kemudian, saya menambahkan function edit product dan delete product user ingin mengubah detail dari suatu produk atau menghapus produk tersebut di file views.py dan membuat path baru di urls.py. Kemudiam saya menambahkan fitur navigation bar untuk tampilan pada main page. Selanjutnya saya melakukan konfigurasi static files dengan meengubah list middleware dan penambahan conditional debug setelah variabel static_url. Terakhir saya melakukan styling pada semua file template sehingga tampilannya menarik. tampilan yang saya bedakan dari tutorial adalah tampilan produk pada main page dan tampilan produk pada detail produk page. 
+## **5. Bagaimana AJAX mempengaruhi pengalaman pengguna (User Experience) pada website?**  
+= Sebelum menggunakan AJAX, proses rendering lebih lama karena program akan merender semua data yang membuat perforrma interaksi antara user dengan platform berkurang. Dengan menggunakan AJAX, performa interaksi dapat ditingkatkan karena hanya perlu mentransfer data kecil untuk dirender yang membuat waktu rendering lebih cepat. Hal ini membuat feedback yang lebih baik dan lebih terasa real-time. AJAX juga membuat user tidak perlu reload paltform web sehingga bisa mengurangi beban kognitif user. Oleh karena itu, AJAX sangat mempengaruhi user experience pada web.   

@@ -32,12 +32,3 @@ class Product(models.Model):
     def increment_views(self):
         self.views += 1
         self.save()
-
-class Book(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255)
-
-class Author(models.Model):
-    bio = models.TextField()
-    books = models.ManyToManyField(Book)
-    user = models.OneToOneField(User) 

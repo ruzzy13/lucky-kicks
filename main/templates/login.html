@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% include 'toast.html' %}
+{% load static %}
 
 {% block meta %}
 <title>Login - Lucky Kicks Store</title>
@@ -10,7 +12,7 @@
     <div class="bg-white rounded-lg border border-gray-200 p-6 sm:p-8 form-style">
       <div class="text-center mb-8">
         <h1 class="text-2xl font-bold text-gray-900 mb-2">Sign In</h1>
-        <p class="text-gray-600">Welcome back to Lucky Kicks Store</p>
+        <p class="text-gray-600">Welcome to Lucky Kicks Store</p>
       </div>
 
       <!-- Form Errors Display -->
@@ -38,7 +40,7 @@
         </div>
       {% endif %}
 
-      <form method="POST" action="" class="space-y-6">
+      <form method="POST" action="{% url 'main:login_ajax' %}" class="space-y-6">
         {% csrf_token %}
         
         <div>
@@ -48,7 +50,7 @@
             name="username" 
             type="text" 
             required 
-            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 transition-colors" 
+            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 transition-colors" 
             placeholder="Enter your username">
         </div>
 
@@ -59,34 +61,22 @@
             name="password" 
             type="password" 
             required 
-            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 transition-colors" 
+            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 transition-colors" 
             placeholder="Enter your password">
         </div>
 
         <button 
           type="submit" 
-          class="w-full bg-green-600 text-white font-medium py-3 px-4 rounded-md hover:bg-green-700 transition-colors">
+          class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-md hover:bg-blue-700 transition-colors">
           Sign In
         </button>
       </form>
 
       <!-- Messages Display -->
       {% if messages %}
-        <div class="mt-6">
+        <div id="message-list" class="hidden">
           {% for message in messages %}
-            <div 
-              class="
-                px-4 py-3 rounded-md text-sm border
-                {% if message.tags == 'success' %}
-                  bg-green-50 border-green-200 text-green-700
-                {% elif message.tags == 'error' %}
-                  bg-red-50 border-red-200 text-red-700
-                {% else %}
-                  bg-gray-50 border-gray-200 text-gray-700
-                {% endif %}
-              ">
-              {{ message }}
-            </div>
+            <div class="message-item" data-tags="{{ message.tags }}">{{ message }}</div>
           {% endfor %}
         </div>
       {% endif %}
@@ -94,7 +84,7 @@
       <div class="mt-6 text-center pt-6 border-t border-gray-200">
         <p class="text-gray-500 text-sm">
           Don't have an account? 
-          <a href="{% url 'main:register' %}" class="text-green-600 hover:text-green-700 font-medium">
+          <a href="{% url 'main:register' %}" class="text-blue-600 hover:text-blue-700 font-medium">
             Register Now
           </a>
         </p>
@@ -102,4 +92,68 @@
     </div>
   </div>
 </div>
+
+<script src="{% static 'js/toast.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messages = document.querySelectorAll('#message-list .message-item');
+    messages.forEach(message => {
+        const messageText = message.textContent.trim();
+        const messageTags = message.getAttribute('data-tags');
+        
+        if (messageTags.includes('success')) {
+            showToast('Success', messageText, 'success');
+        } else if (messageTags.includes('error')) {
+            showToast('Error', messageText, 'error');
+        } else {
+            showToast('Notification', messageText, 'normal');
+        }
+    });
+
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Signing In...';
+
+        const formData = new FormData(form);
+        const url = form.action;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showToast('Login Successful', data.message, 'success');
+                setTimeout(() => {
+                    window.location.href = data.redirect_url;
+                }, 1000);
+            } else if (data.status === 'error') {
+                const errorMessage = data.errors.__all__ ? data.errors.__all__[0] : 'Invalid credentials provided.';
+                showToast('Login Failed', errorMessage, 'error', 4000); // Tampilkan lebih lama
+                submitButton.disabled = false;
+                submitButton.textContent = 'Sign In';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error', 'An unexpected error occurred. Please try again.', 'error');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Sign In';
+        });
+    });
+});
+</script>
+
 {% endblock content %}

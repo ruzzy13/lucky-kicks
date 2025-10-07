@@ -2,92 +2,181 @@
 {% load static %}
 
 {% block meta %}
-<title>{{ product.name }} - Lucky Kicks Store</title>
+<title>Product Detail - Lucky Kicks Store</title>
 {% endblock meta %}
 
 {% block content %}
 <div class="bg-gray-50 w-full min-h-screen">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    
-    <!-- Back Navigation -->
-    <div class="mb-6">
-      <a href="{% url 'main:show_main' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
-        ← Back to Main Menu
-      </a>
-    </div>
-
-    <!-- Article -->
-    <article class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div class="flex flex-col md:flex-row">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <!-- Thumbnail -->
-        <div class="md:w-1/3 relative">
-          {% if product.thumbnail %}
-            <img src="{{ product.thumbnail }}" 
-                 alt="{{ product.name }}" 
-                 class="w-full h-full object-cover md:rounded-l-lg">
-          {% else %}
-            <div class="w-full h-full bg-gray-200 md:rounded-l-lg"></div>
-          {% endif %}
+        <div class="mb-6">
+            <a href="{% url 'main:show_main' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                ← Back to Products
+            </a>
+        </div>
+        
+        <div id="loading-state" class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <svg class="animate-spin h-8 w-8 text-blue-600 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <p class="text-gray-600 mt-3">Loading product detail...</p>
         </div>
 
-        <!-- Content -->
-        <div class="md:w-2/3 p-6 sm:p-8 flex flex-col justify-between">
-          
-          <!-- Header -->
-          <div>
-            <div class="flex flex-wrap items-center gap-2 mb-4">
-              <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-green-600 text-white">
-                {{ product.category }}
-              </span>
-              {% if product.is_featured %}
-                <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-800">
-                  Featured
-                </span>
-              {% endif %}
-              {% if product.is_product_hot %}
-                <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-red-100 text-red-800">
-                  Hot
-                </span>
-              {% endif %}
+        <div id="error-state" class="bg-white rounded-lg border border-gray-200 p-12 text-center hidden">
+            <div class="w-16 h-16 mx-auto mb-4">
+                <div class="text-red-500 text-5xl">⚠️</div>
             </div>
-
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-4">
-              {{ product.name }}
-            </h1>
-
-            <div class="flex flex-wrap items-center text-sm text-gray-500 gap-4 mb-4">
-              <span>Price: Rp {{ product.price }}</span>
-              <span class="mx-2">|</span>
-              <span>Stock: {{ product.stock }}</span>
-              <span class="mx-2">|</span>
-              <span>{{ product.views }} views</span>
-            </div>
-
-            <div class="text-gray-700 leading-relaxed whitespace-pre-line text-base sm:text-lg">
-              {{ product.description }}
-            </div>
-          </div>
-
-          <!-- Seller Info -->
-          <div class="border-t border-gray-200 pt-4 mt-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="font-medium text-gray-900">
-                  {% if product.user %}
-                    <p>Seller: {{ product.user.username }}</p>
-                  {% else %}
-                    <p>Seller: Anonymous</p>
-                  {% endif %}
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Failed to load product</h3>
+            <p class="text-gray-500">Please try again later.</p>
+        </div>
+        
+        <article id="product-content" class="bg-white rounded-lg border border-gray-200 overflow-hidden hidden">
+            <div class="flex flex-col md:flex-row">
+                
+                <div class="md:w-1/3 relative">
+                    <img id="product-thumbnail" src="" alt="" class="w-full h-full object-cover md:rounded-l-lg">
                 </div>
-                <p class="text-sm text-gray-500">Author</p>
-              </div>
-            </div>
-          </div>
 
-        </div>
-      </div>
-    </article>
-  </div>
+                <div class="md:w-2/3 p-6 sm:p-8 flex flex-col justify-between">
+                    
+                    <div>
+                        <div id="badges-container" class="flex flex-wrap items-center gap-2 mb-4">
+                            </div>
+
+                        <h1 id="product-name" class="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-4">
+                            </h1>
+
+                        <p id="product-price" class="text-2xl font-bold text-gray-900 mb-2"></p>
+                            <div class="flex flex-wrap items-center text-sm text-gray-500 gap-4 mb-4">
+                            <span id="product-stock"></span>
+                            <span class="mx-2">|</span>
+                            <span id="product-views"></span>
+                        </div>
+
+                        <div id="product-description" class="text-gray-700 leading-relaxed whitespace-pre-line text-base sm:text-lg">
+                            </div>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-4 mt-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-medium text-gray-900">
+                                    <p id="product-seller">Seller: Loading...</p>
+                                </div>
+                                <p class="text-sm text-gray-500">Seller</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </article>
+    </div>
 </div>
+
+<script>
+const PRODUCT_ID = "{{ product.id }}"; 
+const PRODUCT_DETAIL_ENDPOINT = `{% url 'main:show_json_by_id' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', PRODUCT_ID);
+
+const loadingState = document.getElementById('loading-state');
+const errorState = document.getElementById('error-state');
+const productContent = document.getElementById('product-content');
+const badgesContainer = document.getElementById('badges-container');
+const productName = document.getElementById('product-name');
+const productPrice = document.getElementById('product-price');
+const productStock = document.getElementById('product-stock');
+const productViews = document.getElementById('product-views');
+const productThumbnail = document.getElementById('product-thumbnail');
+const productDescription = document.getElementById('product-description');
+const productSeller = document.getElementById('product-seller');
+
+function showState(state) {
+    loadingState.classList.toggle('hidden', state !== 'loading');
+    errorState.classList.toggle('hidden', state !== 'error');
+    productContent.classList.toggle('hidden', state !== 'ready');
+}
+
+function getReadableCategoryName(categoryCode) {
+    const categoryMapping = {
+        'shoes': 'Shoes',
+        'apparel': 'Apparel',
+        'accessories': 'Accessories',
+    };
+    return categoryMapping[categoryCode] || categoryCode;
+}
+
+function renderProduct(product) {
+    productName.textContent = product.title;
+    document.title = `${product.title} - Lucky Kicks Store`;
+    
+    badgesContainer.innerHTML = '';
+    
+    const categoryBadge = document.createElement('span');
+    let categoryBadgeClass = 'bg-green-600 text-white';
+    if (product.category === 'shoes') {
+        categoryBadgeClass = 'bg-red-600 text-white';
+    } else if (product.category === 'apparel') {
+        categoryBadgeClass = 'bg-blue-600 text-white';
+    }
+    
+    categoryBadge.className = `inline-flex items-center px-3 py-1 rounded-md text-xs font-medium ${categoryBadgeClass}`;
+    categoryBadge.textContent = getReadableCategoryName(product.category);
+    badgesContainer.appendChild(categoryBadge);
+    
+    if (product.is_featured) {
+        const featuredBadge = document.createElement('span');
+        featuredBadge.className = 'inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-800';
+        featuredBadge.textContent = 'Featured';
+        badgesContainer.appendChild(featuredBadge);
+    }
+    
+    if (product.views > 20) {
+        const hotBadge = document.createElement('span');
+        hotBadge.className = 'inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-red-100 text-red-800';
+        hotBadge.textContent = 'Hot';
+        badgesContainer.appendChild(hotBadge);
+    }
+    
+    productPrice.textContent = `Price: Rp ${product.price}`;
+    productStock.textContent = `Stock: ${product.stock}`;
+    productViews.textContent = `${product.views} views`;
+    
+    if (product.thumbnail) {
+        productThumbnail.src = product.thumbnail;
+        productThumbnail.alt = product.title;
+        productThumbnail.parentElement.classList.remove('hidden');
+    } else {
+        productThumbnail.parentElement.classList.add('hidden');
+    }
+    
+    productDescription.textContent = product.content;
+    
+    const sellerName = product.user_username || 'Anonymous';
+    productSeller.textContent = `Seller: ${sellerName}`;
+}
+
+async function loadProductDetail() {
+    try {
+        showState('loading');
+        
+        const response = await fetch(PRODUCT_DETAIL_ENDPOINT, {
+            headers: { 'Accept': 'application/json' },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch product detail');
+        }
+
+        const productData = await response.json();
+        renderProduct(productData);
+        showState('ready');
+    } catch (error) {
+        console.error('Error loading product detail:', error);
+        showState('error');
+    }
+}
+
+loadProductDetail();
+</script>
 {% endblock content %}
