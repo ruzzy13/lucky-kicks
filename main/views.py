@@ -12,6 +12,8 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
+import requests
+import json
 
 # Create your views here.
 @login_required(login_url='/login')
@@ -78,6 +80,8 @@ def show_json(request):
             for products in product_list
               ]
     return JsonResponse(data, safe=False)
+
+
 
 def show_xml_by_id(request, product_id):
    try:
@@ -165,6 +169,7 @@ def delete_product(request, id):
 @csrf_exempt
 @require_POST
 def add_product_ajax(request):
+    
     name = strip_tags(request.POST.get("name"))
     price = request.POST.get("price")
     stock = request.POST.get("stock")
@@ -286,3 +291,64 @@ def login_ajax(request):
                 })
         return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper content type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+    
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        
+        # Ambil data dari JSON, sesuaikan dengan yang dikirim Flutter
+        title = strip_tags(data.get("title", ""))
+        content = strip_tags(data.get("content", ""))
+        category = data.get("category", "apparel") # Default jika kosong
+        thumbnail = data.get("thumbnail", "")
+        is_featured = data.get("is_featured", False)
+        user = request.user
+        
+        # Ambil 'price' dan 'stock', konversi dari string ke integer
+        try:
+            price = int(data.get("price", 0))
+            stock = int(data.get("stock", 0))
+        except (ValueError, TypeError):
+            # Tangani jika data yang dikirim bukan angka
+            return JsonResponse({"status": "error", "message": "Price and Stock must be valid numbers."}, status=400)
+        
+        # Periksa nilai non-negatif
+        if price <= 0 or stock < 0:
+            return JsonResponse({"status": "error", "message": "Price must be greater than zero and Stock cannot be negative."}, status=400)
+
+        # Buat objek Product baru
+        new_product = Product(
+            title=title,
+            price=price,       # <-- Field baru
+            stock=stock,       # <-- Field baru
+            content=content,
+            category=category,
+            thumbnail=thumbnail,
+            is_featured=is_featured,
+            user=user
+            # Tambahkan field lain jika ada (misal: views=0)
+        )
+        new_product.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=401)
